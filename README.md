@@ -43,8 +43,11 @@ Given a ```Deck *new_deck``` variable you can access the number of its cards (dr
 Deck *new_deck = create_deck(NUMBER_OF_DECKS, NUMBER_OF_JOKERS, NUMBER_OF_SHUFFLE_MARKERS, TOGGLE_AUTOSHUFFLE);
 ```
 _NUMBER_OF_DECKS_ indicates the number of decks the new deck will be made out of. For example, keeping in mind that a standard deck of playing cards has 52 cards (13 per suit), if NUMBER_OF_DECKS = 3 the new_deck will be made out of 3 * 52 cards, with 3 copies of each card.
+
 _NUMBER_OF_JOKERS_ indicates the number of jokers present in the deck.
+
 _NUMBER_OF_SHUFFLE_MARKERS_ specifies how many shuffle markers are there in the deck. Once a shuffle marker is drawn, all the previously dealt card get shuffled back in the deck, including all the shuffle markers. Drawing a shuffle marker is like "resetting the deck".
+
 _TOGGLE_AUTOSHUFFLE_ toggles the autoshuffle feature of the draw function on or off. 1 = ON, 0 = OFF.
 
 **_To draw a card:_**
