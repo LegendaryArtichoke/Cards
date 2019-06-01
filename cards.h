@@ -74,6 +74,9 @@ void deck_free(Deck *deck);
 */
 int card_remove(Card card, Deck *deck);
 
+// Returns weather a card passed as a parameter is a figure or not.
+int is_figure(Card card);
+
 // Returns the number of cards that have NOT been drawn in the deck
 int cards_available(Deck *deck);
 

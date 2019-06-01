@@ -76,6 +76,14 @@ Keep in mind that shuffling here means taking all the dealt cards and shuffling 
 
 remove_card returns 1 if the operation was successful, otherwise it returns 0.
 
+**_To check if a card is a figure_**
+
+```c
+int figure = is_figure(new_card);
+```
+
+is_figure returns 1 if the card is a figure, otherwise it returns 0.
+
 **_To check the number of cards yet to be drawn_**
 
 ```c

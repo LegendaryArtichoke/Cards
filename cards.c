@@ -255,6 +255,14 @@ void deck_free(Deck *deck){
   free(deck);
 }
 
+// Returns weather a card passed as a parameter is a figure or not.
+int is_figure(Card card){
+  if(card.value == JACK || card.value == QUEEN || card.value == KING){
+    return 1;
+  }
+  return 0;
+}
+
 // Initializes all the values of an array to 0
 static void initialize(int array[SUITS_NUMBER][CARDS_PER_SUIT]){
   for(int i = 0; i < SUITS_NUMBER; i++){
