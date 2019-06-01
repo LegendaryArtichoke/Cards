@@ -46,7 +46,7 @@ _NUMBER_OF_DECKS_ indicates the number of decks the new deck will be made out of
 
 _NUMBER_OF_JOKERS_ indicates the number of jokers present in the deck.
 
-_NUMBER_OF_SHUFFLE_MARKERS_ specifies how many shuffle markers are there in the deck. Once a shuffle marker is drawn, all the previously dealt card get shuffled back in the deck, including all the shuffle markers. Drawing a shuffle marker is like "resetting the deck".
+_NUMBER_OF_SHUFFLE_MARKERS_ specifies how many shuffle markers are there in the deck.
 
 _TOGGLE_AUTOSHUFFLE_ toggles the autoshuffle feature of the draw function on or off. 1 = ON, 0 = OFF.
 
