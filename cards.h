@@ -49,7 +49,7 @@ typedef struct{
    shuffled when an attempt to draw is made but there are no more cards to draw. 1 = autoshuffle on,
    0 = autoshuffle off.
 */
-Deck *create_deck(int deck_nmb, int jokers, int shuffle_markers, int toggle_autoshuffle);
+Deck *deck_create(int deck_nmb, int jokers, int shuffle_markers, int toggle_autoshuffle);
 
 /*
    Draws a card from the deck passed as a parameter and returns it.
@@ -57,7 +57,7 @@ Deck *create_deck(int deck_nmb, int jokers, int shuffle_markers, int toggle_auto
    automatically, unless specified otherwise by the user during the deck creation process.
    For detaield infos on how a random card is drawn, check the cards.c file.
 */
-Card draw(Deck *deck);
+Card deck_draw(Deck *deck);
 
 /*
    Shuffles the deck passed as a parameter. This implies resetting the deck.checker.cards array and the
@@ -65,7 +65,10 @@ Card draw(Deck *deck);
    are yet to be drawn in the deck. Think of it as collecting all the cards that have already been dealt
    and shuffling them back with the cards that haven't been drawn.
 */
-void shuffle(Deck *deck);
+void deck_shuffle(Deck *deck);
+
+// Trashes a deck out
+void deck_free(Deck *deck);
 
 /*
    Removes a selected card from the deck passed as a parameter. Returns 1 if the operation was successfull,
@@ -73,10 +76,10 @@ void shuffle(Deck *deck);
    To remove the card, the corresponding slot in the deck.checker.cards array is increased by 1, making it
    as if it had already been drawn.
 */
-int remove_card(Card card, Deck *deck);
+int card_remove(Card card, Deck *deck);
 
 // Returns the number of cards that have NOT been drawn in the deck
-int available_cards(Deck *deck);
+int cards_available(Deck *deck);
 
 /*
    Cheks if all the cards (shuffle markers and jokers not included) in the deck passed as a parameter

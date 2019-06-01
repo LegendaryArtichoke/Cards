@@ -27,7 +27,7 @@ int seed_checker = 1; /*
    shuffled when an attempt to draw is made but there are no more cards to draw. 1 = autoshuffle on,
    0 = autoshuffle off.
 */
-Deck *create_deck(int deck_nmb, int jokers, int shuffle_markers, int toggle_autoshuffle){
+Deck *deck_create(int deck_nmb, int jokers, int shuffle_markers, int toggle_autoshuffle){
   Deck *new_deck = malloc(sizeof(Deck));
   if(new_deck == NULL){
     printf("ERROR: heap memory full.\n");
@@ -43,7 +43,7 @@ Deck *create_deck(int deck_nmb, int jokers, int shuffle_markers, int toggle_auto
   return new_deck;
 }
 
-Card draw(Deck *deck){
+Card deck_draw(Deck *deck){
   /*
      If the set_seed function is called for the first time, it sets the srand seed, else it
      does nothing. It checks if it is called for the first time by looking at the seed_checker
@@ -78,7 +78,7 @@ Card draw(Deck *deck){
      This is done to give accurate drawing odds, as the number of available cards
      decreases at each draw.
   */
-  int total_cards = available_cards(deck);
+  int total_cards = cards_available(deck);
   Card drawn_card;
 
   /*
@@ -161,7 +161,7 @@ Card draw(Deck *deck){
    are yet to be drawn in the deck. Think of it as collecting all the cards that have already been dealt
    and shuffling them back with the cards that haven't been drawn.
 */
-void shuffle(Deck *deck){
+void deck_shuffle(Deck *deck){
   initialize(deck->checker.cards);
   deck->checker.jokers = 0;
 }
@@ -172,7 +172,7 @@ void shuffle(Deck *deck){
    To remove the card, the corresponding slot in the deck.checker.cards array is increased by 1, making it
    as if it had already been drawn.
 */
-int remove_card(Card card, Deck *deck){
+int card_remove(Card card, Deck *deck){
   if(deck->checker.cards[card.suit][card.value] < deck->cards_nmb / CARDS_IN_DECK){
     (deck->checker.cards[card.suit][card.value])++; // "Removes the card", basically counting it as drawn.
     return 1; // The card was present in the deck and has been removed successfuly
@@ -184,7 +184,7 @@ int remove_card(Card card, Deck *deck){
 }
 
 // Returns the number of cards that have NOT been drawn in the deck
-int available_cards(Deck *deck){
+int cards_available(Deck *deck){
   int cards_count = 0;
   int maximum_occurencies = deck->cards_nmb / CARDS_IN_DECK;
 
@@ -259,6 +259,11 @@ const char *value(Card card){
     default: printf("Error: the card has an invalid face value\n\n");
              return "ERROR - VALUE";
   }
+}
+
+// Trashes a deck out
+void deck_free(Deck *deck){
+  free(deck);
 }
 
 // Initializes all the values of an array to 0
