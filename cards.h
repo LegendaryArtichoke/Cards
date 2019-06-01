@@ -43,8 +43,7 @@ typedef struct{
    For example, usually in blackjack 6 decks are used at once, all shuffled between eachother,
    so deck_nmb would be equal to 6.
    jokers = number of jokers in the deck
-   shuffle_markers = Number of shuffle markers in the deck. Once a shuffle marker card is drawn,
-   all the cards are shuffled back into the deck, including the shuffle marker.
+   shuffle_markers = Number of shuffle markers in the deck.
    toggle_autoshuffle = allows to toggle on or off the autoshuffle feature, where the deck is automatically
    shuffled when an attempt to draw is made but there are no more cards to draw. 1 = autoshuffle on,
    0 = autoshuffle off.
