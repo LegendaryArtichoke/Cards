@@ -13,16 +13,15 @@ int seed_checker = 1; /*
                          is needed not to set the srand seed more than once
                       */
 
-
+//te
 
 /*
    Creates a new deck given user parameters and returns it.
    deck_nmb refers to the number of unique decks of which the new deck will be made out of.
    For example, usually in blackjack 6 decks are used at once, all shuffled between eachother,
    so deck_nmb would be equal to 6.
-   jokers = number of jokers in the deck
-   shuffle_markers = Number of shuffle markers in the deck. Once a shuffle marker card is drawn,
-   all the cards are shuffled back into the deck, including the shuffle marker.
+   jokers = number of jokers in the deck.
+   shuffle_markers = Number of shuffle markers in the deck.
    toggle_autoshuffle = allows to toggle on or off the autoshuffle feature, where the deck is automatically
    shuffled when an attempt to draw is made but there are no more cards to draw. 1 = autoshuffle on,
    0 = autoshuffle off.
@@ -101,16 +100,6 @@ Card deck_draw(Deck *deck){
   else if(card >= (deck->jokers - deck->checker.jokers) && card < deck->shuffle_markers + (deck->jokers - deck->checker.jokers)){
     drawn_card.suit = SHUFFLE_MARKER;
     drawn_card.value = SHUFFLE_MARKER_VALUE;
-
-    printf("A shuffle marker has been drawn. Shuffling...\n");
-    /*
-      To "shuffle the deck" I'm simply resetting all the variables in the
-      deck.checker variable to 0, this includes the jokers.
-    */
-    initialize(deck->checker.cards);
-    deck->checker.jokers = 0;
-    printf("The deck has been shuffled.\n\n");
-
     return drawn_card;
   }
   else{
