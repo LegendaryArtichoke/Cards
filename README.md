@@ -92,7 +92,7 @@ Be careful not to use the removed deck in future function calls!
 
 # Sample program
 
-I've made a blackjack sample program that I coded using this library... have fun using it and exploring the way I implement cards.c library functions!
+I've made a blackjack sample program that I coded using this library... have fun using it and exploring the way I implement cards.c library functions! The game is played with 8 decks and the 3 available commands are HIT, STAND and EXIT.
 
 # In conclusion
 
