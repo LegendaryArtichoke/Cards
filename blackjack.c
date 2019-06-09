@@ -42,25 +42,25 @@ void deal_hand(Deck *deck){
 
   // Dealing the cards to the dealer and the player, considering the case in which a shuffle marker is drawn
   dealer_faceup = deck_draw(deck);
-  /*while(dealer_faceup.suit == SHUFFLE_MARKER){
+  while(dealer_faceup.suit == SHUFFLE_MARKER){
     dealer_faceup = deck_draw(deck);
     shuffle_drawn = 1;
-  }*/
+  }
   dealer_facedown = deck_draw(deck);
-  /*while(dealer_facedown.suit == SHUFFLE_MARKER){
+  while(dealer_facedown.suit == SHUFFLE_MARKER){
     dealer_facedown = deck_draw(deck);
     shuffle_drawn = 1;
-  }*/
+  }
   player_card_one = deck_draw(deck);
-  /*while(player_card_one.suit == SHUFFLE_MARKER){
+  while(player_card_one.suit == SHUFFLE_MARKER){
     player_card_one = deck_draw(deck);
     shuffle_drawn = 1;
-  }*/
+  }
   player_card_two = deck_draw(deck);
-  /*while(player_card_two.suit == SHUFFLE_MARKER){
+  while(player_card_two.suit == SHUFFLE_MARKER){
     player_card_two = deck_draw(deck);
     shuffle_drawn = 1;
-  }*/
+  }
 
   /*
      Storing both player's and dealer's hand in a dynamically allocated Card array. If at any point during the current hand
@@ -104,17 +104,21 @@ void deal_hand(Deck *deck){
       deck_shuffle(deck);
     }
 
-    /* The program waits for the user to press any key before continuing. This is done to increase enjoyability
+    /* The program waits for the user to press enter before continuing. This is done to increase enjoyability
        of the game, as if the whole dealt hand was printed out all at once in matters of milliseconds, the game
        would get boring real quick. Waiting for user input increase engagement and slows the pace of the match down.
     */
-    printf("PRESS ANY KEY TO CONTINUE");
+    printf("PRESS ENTER TO CONTINUE");
     getchar();
 
     return;
   }
 
   int player_hand_value = 0; // Stores player's hand value.
+  // Printing out player's hand value. For detailed infos on how the hand_value function works check out the function definition.
+  hand_value(player_hand, player_hand_counter, &player_hand_value);
+  printf("Your hand value: %d\n", player_hand_value);
+
   /*
      The following while loop is the player's turn. Player's input is asked until his turn is over. To determine
      weather his turn is over or not, the player_turnover variable is used, which will be set to 1 once the player
@@ -140,10 +144,10 @@ void deal_hand(Deck *deck){
     else if(strcmp(input, "HIT") == 0){ // The player hits.
       // Dealing a new card and considering the case in which a shuffle marker is drawn.
       Card new_card = deck_draw(deck);
-      /*while(new_card.suit == SHUFFLE_MARKER){
+      while(new_card.suit == SHUFFLE_MARKER){
         new_card = deck_draw(deck);
         shuffle_drawn = 1;
-      }*/
+      }
       /*
          The newly delt card is now added to the player_hand array. I'm checking if the array is full beforehand
          and expanding its allocated memory if it is.
@@ -191,13 +195,21 @@ void deal_hand(Deck *deck){
   */
   if(player_hand_value == 21){
     printf("BLACKJACK!\n");
-    /*
-       Before exiting the function, I'm checking if a shuffle marker has been drawn during
-       this hand and shuffling the deck if it has.
-    */
+
+    // Freeing both player's and dealer's hand to avoid memory leaks.
+    free(player_hand);
+    free(dealer_hand);
+    // Shuffling the deck if a shuffle marker has previously been drawn.
     if(shuffle_drawn){
       deck_shuffle(deck);
     }
+    /* The program waits for the user to press enter before continuing. This is done to increase enjoyability
+       of the game, as if the whole dealt hand was printed out all at once in matters of milliseconds, the game
+       would get boring real quick. Waiting for user input increase engagement and slows the pace of the match down.
+    */
+    printf("PRESS ENTER TO CONTINUE");
+    getchar();
+
     return;
   }
   else if(player_hand_value > 21){
@@ -209,11 +221,11 @@ void deal_hand(Deck *deck){
     if(shuffle_drawn){
       deck_shuffle(deck);
     }
-    /* The program waits for the user to press any key before continuing. This is done to increase enjoyability
+    /* The program waits for the user to press enter before continuing. This is done to increase enjoyability
        of the game, as if the whole dealt hand was printed out all at once in matters of milliseconds, the game
        would get boring real quick. Waiting for user input increase engagement and slows the pace of the match down.
     */
-    printf("PRESS ANY KEY TO CONTINUE");
+    printf("PRESS ENTER TO CONTINUE");
     getchar();
 
     return;
@@ -240,31 +252,31 @@ void deal_hand(Deck *deck){
     }
     printf("Dealer's hand value: %d\n\n", dealer_hand_value);
 
-    /* The program waits for the user to press any key before continuing. This is done to increase enjoyability
+    /* The program waits for the user to press enter before continuing. This is done to increase enjoyability
        of the game, as if the whole dealt hand was printed out all at once in matters of milliseconds, the game
        would get boring real quick. Waiting for user input increase engagement and slows the pace of the match down.
     */
-    printf("PRESS ANY KEY TO CONTINUE");
+    printf("PRESS ENTER TO CONTINUE");
     getchar();
 
     if(dealer_hand_value >= 17 && dealer_hand_value <= 21){ // If this condition is verified, the dealer stands and his turn is over.
       printf("\nDealer stands.\n\n");
       dealer_turnover = 1;
-      /* The program waits for the user to press any key before continuing. This is done to increase enjoyability
+      /* The program waits for the user to press enter before continuing. This is done to increase enjoyability
          of the game, as if the whole dealt hand was printed out all at once in matters of milliseconds, the game
          would get boring real quick. Waiting for user input increase engagement and slows the pace of the match down.
       */
-      printf("PRESS ANY KEY TO CONTINUE");
+      printf("PRESS ENTER TO CONTINUE");
       getchar();
     }
     else if(dealer_hand_value < 17){ // Dealer has to hit no matter what if his hand value is less than 17
       printf("\nDealer hits.\n\n");
       // Dealing a new card and considering the case in which a shuffle marker is drawn.
       Card new_card = deck_draw(deck);
-      /*while(new_card.suit == SHUFFLE_MARKER){
+      while(new_card.suit == SHUFFLE_MARKER){
         new_card = deck_draw(deck);
         shuffle_drawn = 1;
-      }*/
+      }
       // Before adding the newly dealt card to the dealer_hand array, I'm checking if its full and expanding it if it is.
       if(dealer_hand_counter == dealer_hand_size){
         dealer_hand_size *= 2;
@@ -278,15 +290,15 @@ void deal_hand(Deck *deck){
         }
       }
       dealer_hand[dealer_hand_counter++] = new_card; // Adding the newly dealt card to the dealer's hand.
-      /* The program waits for the user to press any key before continuing. This is done to increase enjoyability
+      /* The program waits for the user to press enter before continuing. This is done to increase enjoyability
          of the game, as if the whole dealt hand was printed out all at once in matters of milliseconds, the game
          would get boring real quick. Waiting for user input increase engagement and slows the pace of the match down.
       */
-      printf("PRESS ANY KEY TO CONTINUE");
+      printf("PRESS ENTER TO CONTINUE");
       getchar();
     }
     else{ // If the dealer's hand value isn't >= than 17, <= 21 or < 17, he must have busted, so the player wins and the match is over.
-      printf("\nDealer busts.\nYou won!\n");
+      printf("\nDealer busts.\nYou won!\n\n");
       // As the dealer has busted, the match is over and the function can be exited.
       // Freeing both player's and dealer's hand to avoid memory leaks.
       free(player_hand);
@@ -295,11 +307,11 @@ void deal_hand(Deck *deck){
       if(shuffle_drawn){
         deck_shuffle(deck);
       }
-      /* The program waits for the user to press any key before continuing. This is done to increase enjoyability
+      /* The program waits for the user to press enter before continuing. This is done to increase enjoyability
          of the game, as if the whole dealt hand was printed out all at once in matters of milliseconds, the game
          would get boring real quick. Waiting for user input increase engagement and slows the pace of the match down.
       */
-      printf("PRESS ANY KEY TO CONTINUE");
+      printf("PRESS ENTER TO CONTINUE");
       getchar();
 
       return;
@@ -327,11 +339,11 @@ void deal_hand(Deck *deck){
     deck_shuffle(deck);
   }
 
-  /* The program waits for the user to press any key before continuing. This is done to increase enjoyability
+  /* The program waits for the user to press enter before continuing. This is done to increase enjoyability
      of the game, as if the whole dealt hand was printed out all at once in matters of milliseconds, the game
      would get boring real quick. Waiting for user input increase engagement and slows the pace of the match down.
   */
-  printf("PRESS ANY KEY TO CONTINUE");
+  printf("PRESS ENTER TO CONTINUE");
   getchar();
 }
 
