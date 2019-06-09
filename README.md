@@ -90,6 +90,10 @@ deck_free(new_deck);
 
 Be careful not to use the removed deck in future function calls!
 
+# Sample program
+
+I've made a blackjack sample program that I coded using this library... have fun using it and exploring the way I implement cards.c library functions!
+
 # In conclusion
 
 I hope you find this library useful, I had lots of fun writing this! I recommend you check the _cards.h_ header to discover more functions that you may find useful and the _cards.c_ file to have a more in depth understanding of how everything works. I tried to make each function as efficient as possible, minimizing wasted time and CPU use while giving you the same odds of drawing a card that you would normally get if you drew a card with a real deck of cards.  I am open to suggestions on new functions to implement or on how to make things more efficient... _enjoy!_
