@@ -84,7 +84,7 @@ Card deck_draw(Deck *deck){
      Draws a random card. The numbers from 0 to (deck.jokers - deck.checker.jokers - 1) will show that
      a joker has been drawn. deck.jokers - deck.checker.jokers indicates the number of the jokers that are
      yet to be drawn.
-     The numbers from (deck.jokers - deck.checker.jokers) to (deck.shuffle_markers + (deck.jokers - deck.checker.jokers) - 1)
+     The numbers from (deck.jokers - deck.checker.jokers) to ((deck->shuffle_markers - deck->checker.s_markers) + (deck.jokers - deck.checker.jokers) - 1)
      show that a shuffle marker has been drawn, and all the other numbers that a regular
      card has been drawn.
   */
@@ -92,14 +92,15 @@ Card deck_draw(Deck *deck){
   int card = rand() % total_cards;
 
   if(card < (deck->jokers - deck->checker.jokers)){
-    (deck->checker.jokers)++; //increase the number of the drawn jokers
+    (deck->checker.jokers)++; // Increase the number of the drawn jokers.
     drawn_card.suit = JOKER;
     drawn_card.value = JOKER_VALUE;
     return drawn_card;
   }
-  else if(card >= (deck->jokers - deck->checker.jokers) && card < deck->shuffle_markers + (deck->jokers - deck->checker.jokers)){
+  else if(card >= (deck->jokers - deck->checker.jokers) && card < (deck->shuffle_markers - deck->checker.s_markers) + (deck->jokers - deck->checker.jokers)){
     drawn_card.suit = SHUFFLE_MARKER;
     drawn_card.value = SHUFFLE_MARKER_VALUE;
+    (deck->checker.s_markers)++; // Increase the number of the drawn shuffle markers.
     return drawn_card;
   }
   else{
@@ -178,6 +179,7 @@ int cards_available(Deck *deck){
   int maximum_occurencies = deck->cards_nmb / CARDS_IN_DECK;
 
   cards_count += (deck->jokers - deck->checker.jokers);
+  cards_count += (deck->shuffle_markers - deck->checker.s_markers);
 
   for(int i = 0; i < SUITS_NUMBER; i++){
     for(int k = 0; k < CARDS_PER_SUIT; k++){

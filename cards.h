@@ -16,13 +16,13 @@ typedef struct{
    The point of the Drawn_cards struct is to keep track of all the cards that have been
    drawn in a specific deck, so that already drawn card aren't drawn again.
    Cards are saved into the cards array in this order: ace to king, hearts, diamonds,
-   spades and clubs. If a card is drawn but no more copies of that card should exist in the
-   deck, it is simply discarded and a redraw occurs. Keep in mind that the maximum number of
+   spades and clubs. Keep in mind that the maximum number of
    occurencies that a card can have is (deck.cards_nmb / CARDS_IN_DECK).
 */
 typedef struct{
   int cards[SUITS_NUMBER][CARDS_PER_SUIT];
   int jokers;
+  int s_markers;
 } Drawn_cards;
 
 typedef struct{

@@ -33,7 +33,7 @@ _VALUES:_
 
 You can get the string literal associated with a card's suit or value with ```char *new_suit = suit(new_card)```and ```char *new_value = value(new_card)``` please note that you **can't** get the suit literal or value literal of a shuffle marker.
 
-Given a ```Deck *new_deck``` variable you can access the number of its cards (drawn + NOT drawn, jokers and shuffle markers not included) with ```new_deck->cards_nmb```, the number of jokers (drawn + NOT drawn) with ```new_deck->jokers``` and the number of shuffle markers with ```new_deck->shuffle_markers```.
+Given a ```Deck *new_deck``` variable you can access the number of its cards (drawn + NOT drawn, jokers and shuffle markers not included) with ```new_deck->cards_nmb```, the number of jokers (drawn + NOT drawn) with ```new_deck->jokers``` and the number of shuffle markers (drawn + NOT drawn) with ```new_deck->shuffle_markers```.
 
 # Brief tutorial
 
