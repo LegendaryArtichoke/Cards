@@ -16,22 +16,19 @@ typedef struct{
    The point of the Drawn_cards struct is to keep track of all the cards that have been
    drawn in a specific deck, so that already drawn card aren't drawn again.
    Cards are saved into the cards array in this order: ace to king, hearts, diamonds,
-   spades and clubs. If a card is drawn but no more copies of that card should exist in the
-   deck, it is simply discarded and a redraw occurs. Keep in mind that the maximum number of
+   spades and clubs. Keep in mind that the maximum number of
    occurencies that a card can have is (deck.cards_nmb / CARDS_IN_DECK).
 */
 typedef struct{
   int cards[SUITS_NUMBER][CARDS_PER_SUIT];
   int jokers;
+  int s_markers;
 } Drawn_cards;
 
 typedef struct{
   int cards_nmb;            // Number of cards in the deck
   int jokers;               // Number of jokers in the deck
-  int shuffle_markers;      /*
-                               Number of shuffle markers in the deck. Once a shuffle marker card is drawn,
-                               all the cards are shuffled back into the deck, including the shuffle marker.
-                            */
+  int shuffle_markers;      // Number of shuffle markers in the deck.
   int autoshuffle;          // Allows the user to turn the draw autoshuffle feature on or off.
   Drawn_cards checker;
 } Deck;
@@ -43,8 +40,7 @@ typedef struct{
    For example, usually in blackjack 6 decks are used at once, all shuffled between eachother,
    so deck_nmb would be equal to 6.
    jokers = number of jokers in the deck
-   shuffle_markers = Number of shuffle markers in the deck. Once a shuffle marker card is drawn,
-   all the cards are shuffled back into the deck, including the shuffle marker.
+   shuffle_markers = Number of shuffle markers in the deck.
    toggle_autoshuffle = allows to toggle on or off the autoshuffle feature, where the deck is automatically
    shuffled when an attempt to draw is made but there are no more cards to draw. 1 = autoshuffle on,
    0 = autoshuffle off.
@@ -77,6 +73,9 @@ void deck_free(Deck *deck);
    as if it had already been drawn.
 */
 int card_remove(Card card, Deck *deck);
+
+// Returns weather a card passed as a parameter is a figure or not.
+int is_figure(Card card);
 
 // Returns the number of cards that have NOT been drawn in the deck
 int cards_available(Deck *deck);

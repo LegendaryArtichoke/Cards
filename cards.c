@@ -13,16 +13,15 @@ int seed_checker = 1; /*
                          is needed not to set the srand seed more than once
                       */
 
-
+//te
 
 /*
    Creates a new deck given user parameters and returns it.
    deck_nmb refers to the number of unique decks of which the new deck will be made out of.
    For example, usually in blackjack 6 decks are used at once, all shuffled between eachother,
    so deck_nmb would be equal to 6.
-   jokers = number of jokers in the deck
-   shuffle_markers = Number of shuffle markers in the deck. Once a shuffle marker card is drawn,
-   all the cards are shuffled back into the deck, including the shuffle marker.
+   jokers = number of jokers in the deck.
+   shuffle_markers = Number of shuffle markers in the deck.
    toggle_autoshuffle = allows to toggle on or off the autoshuffle feature, where the deck is automatically
    shuffled when an attempt to draw is made but there are no more cards to draw. 1 = autoshuffle on,
    0 = autoshuffle off.
@@ -85,7 +84,7 @@ Card deck_draw(Deck *deck){
      Draws a random card. The numbers from 0 to (deck.jokers - deck.checker.jokers - 1) will show that
      a joker has been drawn. deck.jokers - deck.checker.jokers indicates the number of the jokers that are
      yet to be drawn.
-     The numbers from (deck.jokers - deck.checker.jokers) to (deck.shuffle_markers + (deck.jokers - deck.checker.jokers) - 1)
+     The numbers from (deck.jokers - deck.checker.jokers) to ((deck->shuffle_markers - deck->checker.s_markers) + (deck.jokers - deck.checker.jokers) - 1)
      show that a shuffle marker has been drawn, and all the other numbers that a regular
      card has been drawn.
   */
@@ -93,24 +92,15 @@ Card deck_draw(Deck *deck){
   int card = rand() % total_cards;
 
   if(card < (deck->jokers - deck->checker.jokers)){
-    (deck->checker.jokers)++; //increase the number of the drawn jokers
+    (deck->checker.jokers)++; // Increase the number of the drawn jokers.
     drawn_card.suit = JOKER;
     drawn_card.value = JOKER_VALUE;
     return drawn_card;
   }
-  else if(card >= (deck->jokers - deck->checker.jokers) && card < deck->shuffle_markers + (deck->jokers - deck->checker.jokers)){
+  else if(card >= (deck->jokers - deck->checker.jokers) && card < (deck->shuffle_markers - deck->checker.s_markers) + (deck->jokers - deck->checker.jokers)){
     drawn_card.suit = SHUFFLE_MARKER;
     drawn_card.value = SHUFFLE_MARKER_VALUE;
-
-    printf("A shuffle marker has been drawn. Shuffling...\n");
-    /*
-      To "shuffle the deck" I'm simply resetting all the variables in the
-      deck.checker variable to 0, this includes the jokers.
-    */
-    initialize(deck->checker.cards);
-    deck->checker.jokers = 0;
-    printf("The deck has been shuffled.\n\n");
-
+    (deck->checker.s_markers)++; // Increase the number of the drawn shuffle markers.
     return drawn_card;
   }
   else{
@@ -189,6 +179,7 @@ int cards_available(Deck *deck){
   int maximum_occurencies = deck->cards_nmb / CARDS_IN_DECK;
 
   cards_count += (deck->jokers - deck->checker.jokers);
+  cards_count += (deck->shuffle_markers - deck->checker.s_markers);
 
   for(int i = 0; i < SUITS_NUMBER; i++){
     for(int k = 0; k < CARDS_PER_SUIT; k++){
@@ -264,6 +255,14 @@ const char *value(Card card){
 // Trashes a deck out
 void deck_free(Deck *deck){
   free(deck);
+}
+
+// Returns weather a card passed as a parameter is a figure or not.
+int is_figure(Card card){
+  if(card.value == JACK || card.value == QUEEN || card.value == KING){
+    return 1;
+  }
+  return 0;
 }
 
 // Initializes all the values of an array to 0

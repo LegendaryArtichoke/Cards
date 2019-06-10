@@ -33,7 +33,7 @@ _VALUES:_
 
 You can get the string literal associated with a card's suit or value with ```char *new_suit = suit(new_card)```and ```char *new_value = value(new_card)``` please note that you **can't** get the suit literal or value literal of a shuffle marker.
 
-Given a ```Deck *new_deck``` variable you can access the number of its cards (drawn + NOT drawn, jokers and shuffle markers not included) with ```new_deck->cards_nmb```, the number of jokers (drawn + NOT drawn) with ```new_deck->jokers``` and the number of shuffle markers with ```new_deck->shuffle_markers```.
+Given a ```Deck *new_deck``` variable you can access the number of its cards (drawn + NOT drawn, jokers and shuffle markers not included) with ```new_deck->cards_nmb```, the number of jokers (drawn + NOT drawn) with ```new_deck->jokers``` and the number of shuffle markers (drawn + NOT drawn) with ```new_deck->shuffle_markers```.
 
 # Brief tutorial
 
@@ -46,7 +46,7 @@ _NUMBER_OF_DECKS_ indicates the number of decks the new deck will be made out of
 
 _NUMBER_OF_JOKERS_ indicates the number of jokers present in the deck.
 
-_NUMBER_OF_SHUFFLE_MARKERS_ specifies how many shuffle markers are there in the deck. Once a shuffle marker is drawn, all the previously dealt card get shuffled back in the deck, including all the shuffle markers. Drawing a shuffle marker is like "resetting the deck".
+_NUMBER_OF_SHUFFLE_MARKERS_ specifies how many shuffle markers are there in the deck.
 
 _TOGGLE_AUTOSHUFFLE_ toggles the autoshuffle feature of the draw function on or off. 1 = ON, 0 = OFF.
 
@@ -75,6 +75,14 @@ Keep in mind that shuffling here means taking all the dealt cards and shuffling 
 ```
 
 remove_card returns 1 if the operation was successful, otherwise it returns 0.
+
+**_To check if a card is a figure_**
+
+```c
+int figure = is_figure(new_card);
+```
+
+is_figure returns 1 if the card is a figure, otherwise it returns 0.
 
 **_To check the number of cards yet to be drawn_**
 
