@@ -113,14 +113,13 @@ Card deck_draw(Deck *deck){
        are stricly minor than deck.cards_nmb / CARDS_IN_DECK) is returned.
     */
     int n = rand() % (total_cards - (deck->jokers - deck->checker.jokers));
-    n -= CARDS_IN_DECK * ((deck->cards_nmb / CARDS_IN_DECK) - 1); /*
-                                                                    This solves any issue that might appear
-                                                                    in case the deck is made out of more than
-                                                                    one deck, possibly generating a number
-                                                                    greater than 52 and resulting in no card
-                                                                    being returned in the for loops below.
-                                                                  */
-
+    while(n > CARDS_IN_DECK){
+      n -= CARDS_IN_DECK;  /*
+                              This sholves any issue that might appear in case the deck is made out of more
+                              than one deck, possibly picking a number greater than 52 and resulting in no card
+                              being returned in the for loops below.
+                           */
+    }
     for(int i = 0; i < SUITS_NUMBER; i++){
       for(int k = 0; k < CARDS_PER_SUIT; k++){
         if(deck->checker.cards[i][k] < deck->cards_nmb / CARDS_IN_DECK){ // Card elegible to be drawn found
