@@ -11,8 +11,8 @@ int shuffle_check(Card *card, Deck *deck);
 int hand_value(Card *hand, int nmb_elements, int *value);
 
 int main(){
-  // Creating a deck made out of 6 indivudal decks, 0 jokers and 1 shuffle marker. Autoshuffle toggled on.
-  Deck *deck = deck_create(1,0,1,1);
+  // Creating a deck made out of 8 indivudal decks, 0 jokers and 1 shuffle marker. Autoshuffle toggled on.
+  Deck *deck = deck_create(8,0,1,1);
 
   screen_intro(); // Prints out a program introduction on screen.
   /*
@@ -42,9 +42,9 @@ void deal_hand(Deck *deck){
                           */
 
   /* Dealing the cards to the dealer and the player.
-     The shuffle_check function checks if a shuffle marker has been dealt and keeps dealing cards until a valid card
-     (any card but a shuffle marker) is drawn. shuffle_check returns 1 if a shuffle marker has actually been drawn,
-     otherwise it returns 0.
+     The shuffle_check function checks if the card passed as a parameter is a shuffle marker. If it is, a new card is drawn from the
+     deck passed as a parameter. As there is only one shuffle marker in the deck, no iteration is necessary.
+     shuffle_check returns 1 if a shuffle marker has actually been drawn, otherwise it returns 0.
   */
   dealer_faceup = deck_draw(deck);
   shuffle_drawn = shuffle_check(&dealer_faceup, deck);
@@ -100,6 +100,7 @@ void deal_hand(Deck *deck){
     // Shuffling the deck if a shuffle marker has previouslt been drawn.
     if(shuffle_drawn){
       deck_shuffle(deck);
+      printf("The deck has been shuffled.\n\n");
     }
 
     /* The program waits for the user to press enter before continuing. This is done to increase enjoyability
@@ -138,9 +139,9 @@ void deal_hand(Deck *deck){
 
     else if(strcmp(input, "HIT") == 0){ // The player hits.
       /*
-         Dealing a new card. The shuffle_check function checks if a shuffle marker has been dealt and keeps dealing cards until
-         a valid card (any card but a shuffle marker) is drawn. shuffle_check returns 1 if a shuffle marker has actually been drawn,
-         otherwise it returns 0.
+         Dealing a new card. The shuffle_check function checks if the card passed as a parameter is a shuffle marker. If it is, a new card is drawn from the
+         deck passed as a parameter. As there is only one shuffle marker in the deck, no iteration is necessary.
+         shuffle_check returns 1 if a shuffle marker has actually been drawn, otherwise it returns 0.
       */
       Card new_card = deck_draw(deck);
       shuffle_drawn = shuffle_check(&new_card, deck);
@@ -198,6 +199,7 @@ void deal_hand(Deck *deck){
     // Shuffling the deck if a shuffle marker has previously been drawn.
     if(shuffle_drawn){
       deck_shuffle(deck);
+      printf("The deck has been shuffled.\n\n");
     }
     /* The program waits for the user to press enter before continuing. This is done to increase enjoyability
        of the game, as if the whole dealt hand was printed out all at once in matters of milliseconds, the game
@@ -253,9 +255,9 @@ void deal_hand(Deck *deck){
     else if(dealer_hand_value < 17){ // Dealer has to hit no matter what if his hand value is less than 17
       printf("\nDealer hits.\n\n");
       /*
-         Dealing a new card. The shuffle_check function checks if a shuffle marker has been dealt and keeps dealing cards until
-         a valid card (any card but a shuffle marker) is drawn. shuffle_check returns 1 if a shuffle marker has actually been drawn,
-         otherwise it returns 0.
+         Dealing a new card. The shuffle_check function checks if the card passed as a parameter is a shuffle marker. If it is, a new card is drawn from the
+         deck passed as a parameter. As there is only one shuffle marker in the deck, no iteration is necessary.
+         shuffle_check returns 1 if a shuffle marker has actually been drawn, otherwise it returns 0.
       */
       Card new_card = deck_draw(deck);
       shuffle_drawn = shuffle_check(&new_card, deck);
@@ -290,6 +292,7 @@ void deal_hand(Deck *deck){
       // Shuffling the deck if a shuffle marker has previouslt been drawn.
       if(shuffle_drawn){
         deck_shuffle(deck);
+        printf("The deck has been shuffled.\n\n");
       }
       /* The program waits for the user to press enter before continuing. This is done to increase enjoyability
          of the game, as if the whole dealt hand was printed out all at once in matters of milliseconds, the game
@@ -323,6 +326,7 @@ void deal_hand(Deck *deck){
   // Shuffling the deck if a shuffle marker has previouslt been drawn.
   if(shuffle_drawn){
     deck_shuffle(deck);
+    printf("The deck has been shuffled.\n\n");
   }
 
   /* The program waits for the user to press enter before continuing. This is done to increase enjoyability
@@ -427,14 +431,15 @@ int hand_value(Card *hand, int nmb_elements, int *value){
   return 0;
 }
 
-/* Checks if the card passed as a parameter is a shuffle marker. If it is, a new card is continiously drawn from the
-   deck passed as a parameter until a valid card (any card but a shuffle marker) is drawn.
+/* Checks if the card passed as a parameter is a shuffle marker. If it is, a new card is drawn from the
+   deck passed as a parameter. As there is only one shuffle marker in the deck, no iteration is necessary.
    The function returns 1 if the card passed as a parameter is a shuffle marker, otherwise it returns 0.
 */
 int shuffle_check(Card *card, Deck *deck){
   int return_value = 0;
 
-  while(card->suit == SHUFFLE_MARKER){
+  if(card->suit == SHUFFLE_MARKER){ // If a shuffle marker is drawn, it is discarded and a new card is drawn.
+    printf("A shuffle marker has been drawn, shuffling the deck at the end of the hand.\nNow dealing a new card...\n");
     *card = deck_draw(deck);
     return_value = 1;
   }
