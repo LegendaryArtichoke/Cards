@@ -6,8 +6,9 @@
 
 void screen_intro();
 void read_line(char **string);
-int hand_value(Card *hand, int nmb_elements, int *value);
 void deal_hand(Deck *deck);
+int shuffle_check(Card *card, Deck *deck);
+int hand_value(Card *hand, int nmb_elements, int *value);
 
 int main(){
   // Creating a deck made out of 6 indivudal decks, 0 jokers and 1 shuffle marker. Autoshuffle toggled on.
@@ -40,27 +41,19 @@ void deal_hand(Deck *deck){
                             and at the end of the hand the deck will be shuffled.
                           */
 
-  // Dealing the cards to the dealer and the player, considering the case in which a shuffle marker is drawn
+  /* Dealing the cards to the dealer and the player.
+     The shuffle_check function checks if a shuffle marker has been dealt and keeps dealing cards until a valid card
+     (any card but a shuffle marker) is drawn. shuffle_check returns 1 if a shuffle marker has actually been drawn,
+     otherwise it returns 0.
+  */
   dealer_faceup = deck_draw(deck);
-  while(dealer_faceup.suit == SHUFFLE_MARKER){
-    dealer_faceup = deck_draw(deck);
-    shuffle_drawn = 1;
-  }
+  shuffle_drawn = shuffle_check(&dealer_faceup, deck);
   dealer_facedown = deck_draw(deck);
-  while(dealer_facedown.suit == SHUFFLE_MARKER){
-    dealer_facedown = deck_draw(deck);
-    shuffle_drawn = 1;
-  }
+  shuffle_drawn = shuffle_check(&dealer_facedown, deck);
   player_card_one = deck_draw(deck);
-  while(player_card_one.suit == SHUFFLE_MARKER){
-    player_card_one = deck_draw(deck);
-    shuffle_drawn = 1;
-  }
+  shuffle_drawn = shuffle_check(&player_card_one, deck);
   player_card_two = deck_draw(deck);
-  while(player_card_two.suit == SHUFFLE_MARKER){
-    player_card_two = deck_draw(deck);
-    shuffle_drawn = 1;
-  }
+  shuffle_drawn = shuffle_check(&player_card_two, deck);
 
   /*
      Storing both player's and dealer's hand in a dynamically allocated Card array. If at any point during the current hand
@@ -92,9 +85,14 @@ void deal_hand(Deck *deck){
   printf("Dealer's face up card:\n%s of %s\n\n", value(dealer_faceup), suit(dealer_faceup));
   printf("Your hand:\n%s of %s\t%s of %s\n", value(player_card_one), suit(player_card_one), value(player_card_two), suit(player_card_two));
 
+  int player_hand_value = 0; // Stores player's hand value.
+  // Printing out player's hand value. For detailed infos on how the hand_value function works check out the function definition.
+  (void) hand_value(player_hand, player_hand_counter, &player_hand_value);
+  printf("Your hand value: %d\n", player_hand_value);
+
   // Checks if the player has made blackjack and exits the function if he did.
-  if((player_card_one.value == ACE || player_card_two.value == ACE) && (is_figure(player_card_one) || is_figure(player_card_two))){
-    printf("\nBLACKJACK!\n");
+  if(player_hand_value == 21){
+    printf("\nBLACKJACK!\n\n");
 
     // Freeing both player's and dealer's hand to avoid memory leaks.
     free(player_hand);
@@ -114,15 +112,10 @@ void deal_hand(Deck *deck){
     return;
   }
 
-  int player_hand_value = 0; // Stores player's hand value.
-  // Printing out player's hand value. For detailed infos on how the hand_value function works check out the function definition.
-  hand_value(player_hand, player_hand_counter, &player_hand_value);
-  printf("Your hand value: %d\n", player_hand_value);
-
   /*
      The following while loop is the player's turn. Player's input is asked until his turn is over. To determine
      weather his turn is over or not, the player_turnover variable is used, which will be set to 1 once the player
-     will do his last move.
+     will do his last move (stands, busts, or hits 21).
   */
   int player_turnover = 0;
   do{
@@ -132,22 +125,25 @@ void deal_hand(Deck *deck){
 
     if(strcmp(input, "STAND") == 0){ // The player stands.
       /*
-         Getting the player's hand value with the hand_value function. hand_value returns either 1 if the
+         Getting the player's numerical hand value with the hand_value function. hand_value returns either 1 if the
          player busted or hit 21 or 0 if he didn't. The returned number is usually assigned to player_turnover
-         to determine weather the player busted or not and if his turn it's over. Here though, the player
-         stood so the returned value is ignored and the player_turnover variable is manually assigned to 1.
+         to determine weather the player busted or not and if his turn is over. In this case though, the player
+         stood so the hand_value returned value is ignored and the player_turnover variable is manually set to 1.
+         Keep in mind that hand_value does NOT return the player's hand value, as the player_hand_value variable
+         is passed along as a pointer parameter and gets modified inside the function.
       */
       (void) hand_value(player_hand, player_hand_counter, &player_hand_value);
       player_turnover = 1; // The player's turn is over.
     }
 
     else if(strcmp(input, "HIT") == 0){ // The player hits.
-      // Dealing a new card and considering the case in which a shuffle marker is drawn.
+      /*
+         Dealing a new card. The shuffle_check function checks if a shuffle marker has been dealt and keeps dealing cards until
+         a valid card (any card but a shuffle marker) is drawn. shuffle_check returns 1 if a shuffle marker has actually been drawn,
+         otherwise it returns 0.
+      */
       Card new_card = deck_draw(deck);
-      while(new_card.suit == SHUFFLE_MARKER){
-        new_card = deck_draw(deck);
-        shuffle_drawn = 1;
-      }
+      shuffle_drawn = shuffle_check(&new_card, deck);
       /*
          The newly delt card is now added to the player_hand array. I'm checking if the array is full beforehand
          and expanding its allocated memory if it is.
@@ -169,6 +165,8 @@ void deal_hand(Deck *deck){
          I'm now getting the numerical player's hand value. Eg.: if the player has a Queen and a Seven his hand value will be 17.
          This is done by using the hand_value() function, which returns 1 if the player either busts or hits 21 (no more moves
          to be made). The returned value is assigned to the player_turnover variable.
+         Keep in mind that hand_value does NOT return the player's hand value, as the player_hand_value variable is passed along
+         as a pointer parameter and gets modified inside the function.
       */
       player_turnover = hand_value(player_hand, player_hand_counter, &player_hand_value);
       // Printing on screen the newly dealt card and the player's hand value.
@@ -188,31 +186,11 @@ void deal_hand(Deck *deck){
   }while(player_turnover == 0);
 
   /*
-     At this point, the player's turn is over. He either busted or hit blackjack.
-     What I'm doing now is playing the dealer's turn only if the player hasn't busted or hit blackjack as in those cases
-     the match would be over anyways. To do that, I'm simply checking if the player_hand_value variable is greater of or
-     equal to 21.
+     At this point, the player's turn is over. He either stood, busted or hit 21.
+     What I'm doing now is playing the dealer's turn only if the player hasn't busted, as in that case the player would
+     automatically lose. To do that, I'm simply checking if the player_hand_value variable is greater than 21.
   */
-  if(player_hand_value == 21){
-    printf("BLACKJACK!\n");
-
-    // Freeing both player's and dealer's hand to avoid memory leaks.
-    free(player_hand);
-    free(dealer_hand);
-    // Shuffling the deck if a shuffle marker has previously been drawn.
-    if(shuffle_drawn){
-      deck_shuffle(deck);
-    }
-    /* The program waits for the user to press enter before continuing. This is done to increase enjoyability
-       of the game, as if the whole dealt hand was printed out all at once in matters of milliseconds, the game
-       would get boring real quick. Waiting for user input increase engagement and slows the pace of the match down.
-    */
-    printf("PRESS ENTER TO CONTINUE");
-    getchar();
-
-    return;
-  }
-  else if(player_hand_value > 21){
+  if(player_hand_value > 21){
     printf("\nYOU BUSTED.\n\n");
     // Freeing both player's and dealer's hand to avoid memory leaks.
     free(player_hand);
@@ -227,16 +205,19 @@ void deal_hand(Deck *deck){
     */
     printf("PRESS ENTER TO CONTINUE");
     getchar();
-
+    // Exiting the function.
     return;
   }
 
 
-  // If the code reaches this point, the player hasn't busted or hit blackjack so the dealer needs to play his turn.
+  /* If the code reaches this point, the player hasn't busted or hit blackjack so the dealer needs to play his turn.
+     In the following while loop, note how the dealer's hand value is calculated only at the beginning of each recursion
+     of the loop itself.
+  */
   int dealer_turnover = 0; /* This variable is assigned to 1 once the dealer's turn is over. This happens either when
-                              the dealer busts or hits 17 and higher
+                              the dealer busts or hits 17 and higher.
                            */
-  int dealer_hand_value = 0; // Stores dealer's hand value
+  int dealer_hand_value = 0; // Stores dealer's hand value.
   do {
     dealer_turnover = hand_value(dealer_hand, dealer_hand_counter, &dealer_hand_value); /*
                                                                                            Similarly to the player's turn while
@@ -271,12 +252,13 @@ void deal_hand(Deck *deck){
     }
     else if(dealer_hand_value < 17){ // Dealer has to hit no matter what if his hand value is less than 17
       printf("\nDealer hits.\n\n");
-      // Dealing a new card and considering the case in which a shuffle marker is drawn.
+      /*
+         Dealing a new card. The shuffle_check function checks if a shuffle marker has been dealt and keeps dealing cards until
+         a valid card (any card but a shuffle marker) is drawn. shuffle_check returns 1 if a shuffle marker has actually been drawn,
+         otherwise it returns 0.
+      */
       Card new_card = deck_draw(deck);
-      while(new_card.suit == SHUFFLE_MARKER){
-        new_card = deck_draw(deck);
-        shuffle_drawn = 1;
-      }
+      shuffle_drawn = shuffle_check(&new_card, deck);
       // Before adding the newly dealt card to the dealer_hand array, I'm checking if its full and expanding it if it is.
       if(dealer_hand_counter == dealer_hand_size){
         dealer_hand_size *= 2;
@@ -290,6 +272,7 @@ void deal_hand(Deck *deck){
         }
       }
       dealer_hand[dealer_hand_counter++] = new_card; // Adding the newly dealt card to the dealer's hand.
+
       /* The program waits for the user to press enter before continuing. This is done to increase enjoyability
          of the game, as if the whole dealt hand was printed out all at once in matters of milliseconds, the game
          would get boring real quick. Waiting for user input increase engagement and slows the pace of the match down.
@@ -300,6 +283,7 @@ void deal_hand(Deck *deck){
     else{ // If the dealer's hand value isn't >= than 17, <= 21 or < 17, he must have busted, so the player wins and the match is over.
       printf("\nDealer busts.\nYou won!\n\n");
       // As the dealer has busted, the match is over and the function can be exited.
+
       // Freeing both player's and dealer's hand to avoid memory leaks.
       free(player_hand);
       free(dealer_hand);
@@ -318,7 +302,9 @@ void deal_hand(Deck *deck){
     }
   } while(dealer_turnover == 0);
 
-  // Dealer's turn is over. Determining weather player or dealer won the match.
+  /* Dealer's turn is over. If the program reaches this point the dealer didn't bust. I'm now determining weather the player
+     or the dealer won the match.
+  */
   printf("\nDealer's hand: %d\nPlayer's hand: %d\n", dealer_hand_value, player_hand_value);
   if(dealer_hand_value > player_hand_value){
     printf("Dealer wins.\n\n");
@@ -359,14 +345,13 @@ int hand_value(Card *hand, int nmb_elements, int *value){
      As aces can be counted both as 11s and as 1s, to get the correct value of the ace
      the following method is adopted: all aces are initially counted as 11s. If after
      this calculation the hand value is equal or lower than 21, the correct value has
-     been assigned. If the hand value is greater than 21, the hand_value function gets
-     called recursively, counting the first ace in the hand as a 1 instead of an 11. If there
-     is more than one ace in the hand, only the first one is counted as a 1 initially, and
-     if the hand value turns out to be greater than 21 again, the function keeps getting
+     been assigned to the ace. If the hand value is greater than 21, the hand_value function gets
+     called recursively, counting the first encounterd ace in the hand as a 1 instead of an 11.
+     If the hand value turns out to be greater than 21 again, the function keeps getting
      called recursively until either the hand value turns out to be smaller than 21 or
      until each ace has been counted as a 1.
-     To count the aces as one, their face value is subtitued with a temporary value of 444 (random number that will not
-     cause any conflict with any other existing value).
+     To count an ace as a 1, its face value is subtitued with a temporary value of 444 (random number that will not
+     cause any conflict with any other existing face value).
      To avoid corrupting the hand array passed as a parameter, for all the calculations
      a hand_copy array is used.
   */
@@ -418,7 +403,7 @@ int hand_value(Card *hand, int nmb_elements, int *value){
   }
 
   /*
-     If the hand value is greater than 21, checks if there are any ace in the hand_cpy array.
+     If the hand value is greater than 21, checks if there is any ace in the hand_cpy array.
      If an ace is found, its face value is switched with an arbitrarily assigned temp value
      and the hand_value function is called recursively. If no ace is found, nothing is done.
   */
@@ -442,6 +427,20 @@ int hand_value(Card *hand, int nmb_elements, int *value){
   return 0;
 }
 
+/* Checks if the card passed as a parameter is a shuffle marker. If it is, a new card is continiously drawn from the
+   deck passed as a parameter until a valid card (any card but a shuffle marker) is drawn.
+   The function returns 1 if the card passed as a parameter is a shuffle marker, otherwise it returns 0.
+*/
+int shuffle_check(Card *card, Deck *deck){
+  int return_value = 0;
+
+  while(card->suit == SHUFFLE_MARKER){
+    *card = deck_draw(deck);
+    return_value = 1;
+  }
+
+  return return_value;
+}
 
 // Prints out a program introduction on screen.
 void screen_intro(){
