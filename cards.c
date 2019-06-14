@@ -1,19 +1,25 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
+#include <string.h>
 #include "cards.h"
 
 const int CARDS_IN_DECK = 52;
+const char error_log[] = " "; /*
+                                Error log file location. If this is equal to " ", the default location will
+                                be set in the current working directory and the error log file name will be based
+                                upon the time at which the program will run.
+                                You can change the directory in which the error log file is saved by changing this variable.
+                              */
 
 static void initialize(int array[SUITS_NUMBER][CARDS_PER_SUIT]);
-static void set_seed(int *check);
+static void startup(int *check);
 
-int seed_checker = 1; /*
-                         This variable, together with the set_seed function,
-                         is needed not to set the srand seed more than once
+int startup_checker = 1; /*
+                         This variable, together with the startup function,
+                         is needed not to set the srand seed and do the stderr
+                         linking more than once.
                       */
-
-//te
 
 /*
    Creates a new deck given user parameters and returns it.
@@ -27,9 +33,18 @@ int seed_checker = 1; /*
    0 = autoshuffle off.
 */
 Deck *deck_create(int deck_nmb, int jokers, int shuffle_markers, int toggle_autoshuffle){
+  /*
+     If the startup function is called for the first time, it sets the srand seed and links a new file
+     to the stderr stream. Each error message will then be printed out on stderr. If startup has already been
+     called, nothing is done.
+     startup() checks if it is called for the first time by looking at the startup_checker variable passed along
+     as a parameter. If it is equal to 1, startup() has been called for the first time.
+  */
+  startup(&startup_checker);
+
   Deck *new_deck = malloc(sizeof(Deck));
   if(new_deck == NULL){
-    printf("ERROR: heap memory full.\n");
+    fprintf(stderr, "ERROR: heap memory full.\n");
     exit(EXIT_FAILURE);
   }
 
@@ -43,14 +58,6 @@ Deck *deck_create(int deck_nmb, int jokers, int shuffle_markers, int toggle_auto
 }
 
 Card deck_draw(Deck *deck){
-  /*
-     If the set_seed function is called for the first time, it sets the srand seed, else it
-     does nothing. It checks if it is called for the first time by looking at the seed_checker
-     variable, passed along as a parameter. If it is equal to 1, set_seed has been called for the
-     first time.
-  */
-  set_seed(&seed_checker);
-
   /*
      Before doing anything, the function checks if there are actually any cards to
      draw inside the deck. If all the cards have already been drawn, it checks the deck.autoshuffle toggle.
@@ -66,7 +73,7 @@ Card deck_draw(Deck *deck){
       printf("The deck has been shuffled.\n\n");
     }
     else{ // Autoshuffle toggled off.
-      printf("The deck is empty.\n\n");
+      fprintf(stderr, "ERROR: draw attempt on empty deck\n");
       Card card = {99, 99};
       return card;
     }
@@ -138,9 +145,9 @@ Card deck_draw(Deck *deck){
 
   /*
      The code should never reach this point, as a card should always be returned before this. If someone ever gets this
-     error message, please let me know in the bugs section!
+     error message, please let me know in the bugs section appending your code!
   */
-  puts("ERROR: UNEXPECTED ERROR DURING THE DRAWING PHASE");
+  fprintf(stderr, "ERROR: UNEXPECTED ERROR DURING THE DRAWING PHASE.\n");
   exit(EXIT_FAILURE);
 }
 
@@ -223,7 +230,7 @@ const char *suit(Card card){
     case 2: return "Spades";
     case 3: return "Clubs";
     case 4: return "Joker";
-    default: printf("Error: the card has an invalid suit\n\n");
+    default: fprintf(stderr, "Error: the card has an invalid suit\n");
              return "ERROR - SUIT";
 
   }
@@ -246,7 +253,7 @@ const char *value(Card card){
     case 11: return "Queen";
     case 12: return "King";
     case 13: return "Joker";
-    default: printf("Error: the card has an invalid face value\n\n");
+    default: fprintf(stderr, "Error: the card has an invalid face value\n");
              return "ERROR - VALUE";
   }
 }
@@ -274,14 +281,45 @@ static void initialize(int array[SUITS_NUMBER][CARDS_PER_SUIT]){
 }
 
 /*
-   If the set_seed function is called for the first time, it sets the srand seed, else it
-   does nothing. It checks if it is called for the first time by looking at the seed_checker
-   variable, passed along as a parameter. If it is equal to 1, set_seed has been called for the
-   first time.
+   If the setup function is called for the first time, it sets the srand seed and links a new file
+   to the stderr stream. Each error message will then be printed out on stderr. If startup has already been
+   called, nothing is done.
+   It checks if it is called for the first time by looking at the startup_checker variable, passed along as a
+   parameter. If it is equal to 1, startup has been called for the first time.
 */
-static void set_seed(int *check){
+static void startup(int *check){
   if(*check == 1){
     *check = 0;
     srand(time(NULL));
+
+    if(strcmp(error_log, " ") == 0){ /*
+                                        No custom directory has been specified. Giving the error log file a default name
+                                        and saving it in the current working directory.
+                                     */
+
+      /* To make sure a unique name is given, the time.h functions are used and the error log filename will have the current time
+         appended to it.
+      */
+      time_t current_time;
+      time(&current_time); // Getting current time.
+      char error_text[] = "Error log ";
+
+      char *filename = malloc(sizeof(error_text) + sizeof(ctime(&current_time)) + 1);
+      if(filename == NULL){
+        fprintf(stderr, "ERROR: heap memory full.\n");
+        exit(EXIT_FAILURE);
+      }
+      strcpy(filename, error_text);
+      strcat(filename, ctime(&current_time));
+
+      if((freopen(filename, "w", stderr)) == NULL){
+        fprintf(stderr, "ERROR: error during the error log file setup.");
+      }
+    }
+    else{ // A custom error log file directory has been detected, so stderr will be linked to that.
+      if((freopen(error_log, "w", stderr)) == NULL){
+        fprintf(stderr, "ERROR: error during the error log file setup.");
+      }
+    }
   }
 }

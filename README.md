@@ -98,6 +98,10 @@ deck_free(new_deck);
 
 Be careful not to use the removed deck in future function calls!
 
+**_Error log file_**
+
+In case any error occurs, an error message will be printed out on an error log file. The log file will be saved by default in the current working directory, but you can change this by modifying the `const char error_log[] = " "` variable right at the beginning of `cards.c` to whichever directory you like. Simply insert the target directory inside the `" "`.
+
 # Sample program
 
 I've made a blackjack sample program that I coded using this library... have fun using it and exploring the way I implement cards.c library functions! The game is played with 8 decks and the 3 available commands are HIT, STAND and EXIT.
