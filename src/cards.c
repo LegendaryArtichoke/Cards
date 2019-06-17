@@ -2,7 +2,8 @@
 #include <time.h>
 #include <stdlib.h>
 #include <string.h>
-#include "cards.h"
+
+#include "cards/cards.h"
 
 const int CARDS_IN_DECK = 52;
 const char error_log[] = " "; /*
